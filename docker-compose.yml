@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  web:
+    image: php:8.2-apache
+    container_name: lamp_web
+    ports:
+      - "80:80"
+      - "9003:9003" # Puerto para Xdebug
+    volumes:
+      - ./www:/var/www/html
+    environment:
+      XDEBUG_MODE: develop,debug
+      XDEBUG_CONFIG: client_host=host.docker.internal client_port=9003
+    depends_on:
+      - db
+    networks:
+      - lamp-network
+
+  db:
+    image: mysql:8.0
+    container_name: lamp_db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: testdb
+      MYSQL_USER: testuser
+      MYSQL_PASSWORD: testpass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - lamp-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: lamp_phpmyadmin
+    depends_on:
+      - db
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: rootpassword
+    networks:
+      - lamp-network
+
+volumes:
+  mysql_data:
+
+networks:
+  lamp-network:
+    driver: bridge
