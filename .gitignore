@@ -1,0 +1,8 @@
+# Ignora todo en www excepto el README
+www/*
+!www/README.md
+
+# Opcional: ignorar archivos típicos de Docker/IDE
+.DS_Store
+.idea
+*.log
